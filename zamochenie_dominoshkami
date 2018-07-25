@@ -1,0 +1,95 @@
+#define _CRT_SECURE_NO_WARNINGS
+#define forn(i, a, n) for(ll i = a; i < n; i++)
+
+#include<stdio.h>
+#include<iostream>
+#include<vector>
+#include<sstream>
+#include<algorithm>
+
+
+using namespace std;
+
+typedef long long ll;
+const ll mod = 1e9 + 7;
+
+
+ll n, m, t, co, colo, fi, se;
+vector<vector<ll>> g;
+vector<ll> kh_next;
+vector<ll> used;
+vector<string> s;
+
+int khun(ll v)
+{
+	if (used[v])
+	{
+		return 0;
+	}
+	used[v] = 1;
+	forn(i, 0, g[v].size())
+	{	
+		if (kh_next[g[v][i]] == -1 || khun(kh_next[g[v][i]]))
+		{
+			kh_next[g[v][i]] = v;
+			return 1;
+		}
+	}
+	return 0;
+}
+
+
+int main()
+{
+	freopen("input.txt", "r", stdin);
+	freopen("output.txt", "w", stdout);
+
+	cin >> n >> m >> fi >> se;
+	used.resize(n*m);
+	g.resize(n*m);
+	kh_next.resize(n*m,-1);
+	forn(i, 0, n)
+	{
+		string in;
+		cin >> in;
+		s.push_back(in);
+	}
+
+	forn(i, 0 , n )
+		forn(j, 0, m )
+	{
+		if (s[i][j] == '*')
+		{
+			colo++;
+			if ((j+1 < m)&&(s[i][j+1] == '*'))
+			{
+				g[i*m + j].push_back(i*m + j + 1);
+				g[i*m + j + 1].push_back(i*m + j);
+			}
+			if ((i+1 < n) && (s[i + 1][j] == '*'))
+			{
+				g[i*m + j].push_back(i*m + j + m);
+				g[i*m + j + m].push_back(i*m + j);
+			}
+		}
+	}
+
+	forn(i, 0, n)
+	forn(j, 0, m)
+	{
+		if ((i + j) % 2)
+		{
+			used.assign(n*m, 0);
+			t = i*m+j;
+			co+=khun(i*m+j);
+		}
+	}
+
+
+	if (se * 2 < fi)
+		cout << (colo)*se;
+	else
+		cout << (co)*fi + (colo - co*2) * se;
+
+	return 0;
+}
